@@ -228,8 +228,8 @@ int printf_null(char *fmt, ...)
 
 T32S StackTest(void)
 {
-	TYPE_STACK Stack= {0};
-	T16U i=0;
+	TYPE_STACK Stack= {{0}, 0};
+	T32U i=0;
 	Stack.SP = 0;
 	printf("NULL_FUNC:%p\n",NULL_FUNC);
 	printf("**********************\n");

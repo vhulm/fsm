@@ -144,7 +144,7 @@ typedef enum
             self._writes_state_child(fd, state)
             self._writes_state_actuator(fd, state)
             fd.write(
-                "TYPE_STATE {0}_State = {{ \\{new_line}(TYPE_STATE *){1}, \\{new_line}{0}_EntryFunc, \\{new_line}{0}_ExitFunc, \\{new_line}{0}_State_Childs, \\{new_line}{0}_State_Actuators, \\{new_line}}};{new_line}{new_line}".format(
+                "TYPE_STATE {0}_State = {{ \\{new_line}(TYPE_STATE *){1}, \\{new_line}{0}_EntryFunc, \\{new_line}{0}_ExitFunc, \\{new_line}(TYPE_STATE *){0}_State_Childs, \\{new_line}(TYPE_ACTUATOR *){0}_State_Actuators, \\{new_line}}};{new_line}{new_line}".format(
                     state["name"], self.states_list.index(state["parent"]), new_line=NEW_LINE))
 
         fd.write("TYPE_STATE *AllStates[] = {")
@@ -154,26 +154,26 @@ typedef enum
         fd.write(NEW_LINE)
 
     def _write_data_const_func(self, fd):
-        fd.write("""TYPE_STACK Stack = {0};
+        fd.write("""TYPE_STACK Stack = {{0}, 0};
 
 TYPE_STATE_MGR StateMgr = {&root_State,&STA_2D_State,&Stack};
 
 TYPE_STATE_MGR *XXX_StateMachineCreate(void)
 {
-    TYPE_ACTUATOR *pAllActors = AllActors;
-    TYPE_STATE *pAllStates = AllStates;
-    T8U TargetStateID = 0;
+    TYPE_ACTUATOR *pAllActors = (TYPE_ACTUATOR *)AllActors;
+    TYPE_STATE *pAllStates = (TYPE_STATE *)AllStates;
+    T32U TargetStateID = 0;
 
     while(pAllActors != NULL)
     {
-        TargetStateID = (T8U)(pAllActors->TargetState);
+        TargetStateID = (T32U)(pAllActors->TargetState);
         pAllActors->TargetState = AllStates[TargetStateID];
         pAllActors++;
     }
 
     while(pAllStates != NULL)
     {
-        TargetStateID = (T8U)(pAllStates->pParent);
+        TargetStateID = (T32U)(pAllStates->pParent);
         pAllStates->pParent = AllStates[TargetStateID];
         pAllStates++;
     }
