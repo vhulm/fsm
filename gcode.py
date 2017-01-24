@@ -29,23 +29,25 @@ class ConfParser(object):
 
     @staticmethod
     def _get_states_func_declare(state):
-        return "void {entryfunc}(void);{new_line}void {exitfunc}(void);{new_line}{new_line}".format(new_line=NEW_LINE,
-                                                                                                    **state)
+        return "static void {entryfunc}(void);{new_line}static void {exitfunc}(void);{new_line}{new_line}".format(
+            new_line=NEW_LINE,
+            **state)
 
     @staticmethod
     def _get_states_func_define(state):
-        return "void {entryfunc}(void){new_line}{{{new_line}{new_line}}}{new_line}{new_line}void {exitfunc}(void){new_line}{{{new_line}{new_line}}}{new_line}{new_line}".format(
+        return "static void {entryfunc}(void){new_line}{{{new_line}{new_line}}}{new_line}{new_line}static void {exitfunc}(void){new_line}{{{new_line}{new_line}}}{new_line}{new_line}".format(
             new_line=NEW_LINE,
             **state)
 
     @staticmethod
     def _get_actuators_func_declare(actuator):
-        return "void {}(void);{new_line}".format(actuator["actuator"][3], new_line=NEW_LINE)
+        return "static void {}(void);{new_line}".format(actuator["actuator"][3], new_line=NEW_LINE)
 
     @staticmethod
     def _get_actuators_func_define(actuator):
-        return "void {0[3]}(void){new_line}{{{new_line}{new_line}}}{new_line}{new_line}".format(actuator["actuator"],
-                                                                                                new_line=NEW_LINE)
+        return "static void {0[3]}(void){new_line}{{{new_line}{new_line}}}{new_line}{new_line}".format(
+            actuator["actuator"],
+            new_line=NEW_LINE)
 
     def _update_states(self):
         self.states.insert(0, dict(name="root", parent="root"))  # Insert the "root" node to the head
@@ -87,17 +89,22 @@ class ConfParser(object):
 
     def _write_header_file(self):
         f = open(CONF_HEADER_FILE, "w")
-        f.write("""#ifndef STATE_CONF_H
-#define STATE_CONF_H
+        f.write("""#ifndef FSM_CONF_H
+#define FSM_CONF_H
 
+#include "fsm.h"
+
+typedef enum
+{
+    EVENT_1 = 0,
+    EVENT_2,
+    EVENT_3,
+    EVENT_4,
+    EVENT_5,
+    XXX_EVENT_MAX,
+}XXX_EVENT;
 """)
-        for state in self.states:
-            f.write(ConfParser._get_states_func_declare(state))
-
-        for actuator in self.actuators:
-            f.write(ConfParser._get_actuators_func_declare(actuator))
-
-        f.write("{new_line}void StateDataStructConst(void);{new_line}{new_line}".format(new_line=NEW_LINE))
+        f.write("{new_line}TYPE_STATE_MGR *XXX_StateMachineCreate(void);{new_line}{new_line}".format(new_line=NEW_LINE))
 
         f.write("""#endif
 
@@ -110,13 +117,6 @@ class ConfParser(object):
             act, self.states_list.index(act[4]), new_line=NEW_LINE)
 
     def _write_actuators(self, fd):
-
-        fd.write(r'''#include <stdio.h>
-#include "fsm.h"
-#include "fsm_conf.h"
-
-''')
-
         for actuator in self.actuators:
             fd.write(self._format_actuator(actuator))
 
@@ -154,7 +154,11 @@ class ConfParser(object):
         fd.write(NEW_LINE)
 
     def _write_data_const_func(self, fd):
-        fd.write("""void StateDataStructConst(void)
+        fd.write("""TYPE_STACK Stack = {0};
+
+TYPE_STATE_MGR StateMgr = {&root_State,&STA_2D_State,&Stack};
+
+TYPE_STATE_MGR *XXX_StateMachineCreate(void)
 {
     TYPE_ACTUATOR *pAllActors = AllActors;
     TYPE_STATE *pAllStates = AllStates;
@@ -174,11 +178,26 @@ class ConfParser(object):
         pAllStates++;
     }
 
+    return &StateMgr;
 }
 """)
 
+    def _write_func_declare(self, fd):
+        for state in self.states:
+            fd.write(ConfParser._get_states_func_declare(state))
+
+        for actuator in self.actuators:
+            fd.write(ConfParser._get_actuators_func_declare(actuator))
+
+        fd.write(NEW_LINE)
+
     def _write_source_file(self):
         f = open(CONF_SOURCE_FILE, "w")
+        f.write(r'''#include <stdio.h>
+#include "fsm_conf.h"
+
+''')
+        self._write_func_declare(f)
         self._write_actuators(f)
         self._writes_states(f)
         self._write_data_const_func(f)

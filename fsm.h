@@ -2,12 +2,6 @@
 #define FSM_H
 
 #include <stdio.h>
-#include "fsm_conf.h"
-
-
-#define void \
-	void
-
 
 #define NO_ERROR 0
 #define ERROR_1 -1
@@ -45,15 +39,7 @@ void NULL_FUNC(void);
 
 typedef struct tSTATE TYPE_STATE;
 
-typedef enum
-{
-	EVENT_1 = 0,
-	EVENT_2,
-	EVENT_3,
-	EVENT_4,
-	EVENT_5,
-	TYPE_EVENT_MAX,
-}TYPE_EVENT;
+typedef unsigned char TYPE_EVENT;
 
 typedef struct tACTUATOR
 {
@@ -61,7 +47,6 @@ typedef struct tACTUATOR
 	FP_ACT_CALL_BACK_FUNC CallFunc;
 	TYPE_STATE *TargetState;
 }TYPE_ACTUATOR;
-
 
 struct tSTATE
 {

@@ -186,31 +186,31 @@ T32S StackTest(void)
 	TYPE_STACK Stack= {0};
 	T16U i=0;
 	Stack.SP = 0;
-	printf("NULL_FUNC:%d\n",NULL_FUNC);
+	printf("NULL_FUNC:%p\n",NULL_FUNC);
 	printf("**********************\n");
-	printf("StackPOP :%d\n",StackPOP(&Stack));
+	printf("StackPOP :%p\n",StackPOP(&Stack));
 	printf("**********************\n");
-	printf("StackView:%d\n",StackView(&Stack));
+	printf("StackView:%p\n",StackView(&Stack));
 	printf("**********************\n");
-	printf("StackPOP:%d\n",StackPOP(&Stack));
+	printf("StackPOP:%p\n",StackPOP(&Stack));
 	printf("**********************\n");
-	printf("StackPUSH:%d\n",StackPUSH(&Stack,(FP_STATE_EX_FUNC)456));
-	printf("**********************\n");
-	for(i=0;i<MAX_ROUTE_STACK_DEEP+5;i++)
-	{
-		printf("StackPUSH:%d\n",StackPUSH(&Stack,(FP_STATE_EX_FUNC)i));
-	}
-	printf("**********************\n");
-	printf("StackView:%d\n",StackView(&Stack));
-	printf("**********************\n");
-	printf("StackPOP:%d\n",StackPOP(&Stack));
+	printf("StackPUSH:%p\n",StackPUSH(&Stack,(FP_STATE_EX_FUNC)456));
 	printf("**********************\n");
 	for(i=0;i<MAX_ROUTE_STACK_DEEP+5;i++)
 	{
-		printf("StackPOP:%d\n",StackPOP(&Stack));
+		printf("StackPUSH:%p\n",StackPUSH(&Stack,(FP_STATE_EX_FUNC)i));
 	}
 	printf("**********************\n");
-	printf("StackPOP:%d\n",StackPOP(&Stack));
+	printf("StackView:%p\n",StackView(&Stack));
+	printf("**********************\n");
+	printf("StackPOP:%p\n",StackPOP(&Stack));
+	printf("**********************\n");
+	for(i=0;i<MAX_ROUTE_STACK_DEEP+5;i++)
+	{
+		printf("StackPOP:%p\n",StackPOP(&Stack));
+	}
+	printf("**********************\n");
+	printf("StackPOP:%p\n",StackPOP(&Stack));
 	printf("**********************\n");
 
 	printf("Test complete!!!\n");
