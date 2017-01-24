@@ -72,21 +72,27 @@ typedef struct tSTATE_MGR
 	TYPE_STACK *pStack;
 }TYPE_STATE_MGR;
 
+void HandleEvent(TYPE_STATE_MGR *this,TYPE_EVENT Event);
+
+TYPE_ACTUATOR *SearchActuator(TYPE_STATE_MGR *this,TYPE_EVENT Event);
+TYPE_STATE *SearchTargetState(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
+void StateRoutePlay(TYPE_STATE_MGR *this);
+
+TYPE_STATE *SearchUP(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
+TYPE_STATE *SearchDown(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
+
+TYPE_STATE *SearchSiblingNodes(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState);
+
+TYPE_STATE *RecursionSearch(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState);
+
+void StateRouteRecord(TYPE_STATE_MGR *this,TYPE_STATE_OPT StateOpt,TYPE_STATE *State);
+
 FP_STATE_EX_FUNC StackPOP(TYPE_STACK *this);
 FP_STATE_EX_FUNC StackPUSH(TYPE_STACK *this,FP_STATE_EX_FUNC CallFunc);
 FP_STATE_EX_FUNC StackView(TYPE_STACK *this);
 
-void StateRouteRecord(TYPE_STATE_MGR *this,TYPE_STATE_OPT StateOpt,TYPE_STATE *State);
-
-TYPE_STATE *SearchSiblingNodes(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState);
-TYPE_STATE *StateSearchUP(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
-
-TYPE_STATE *StateSearchDown(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
-TYPE_STATE *StateRecursionSearch(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState);
-
-TYPE_STATE *StateSearchTargetState(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
-
-void HandleEvent(TYPE_STATE_MGR *this,TYPE_EVENT Event);
+void NULL_FUNC(void);
+int printf_null(char *fmt, ...);
 
 T32S StackTest(void);
 

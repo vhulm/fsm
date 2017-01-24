@@ -2,15 +2,15 @@
 #include "fsm.h"
 #include "fsm_conf.h"
 
-TYPE_STATE_MGR *AudState;
+TYPE_STATE_MGR *AudStateHnd;
 
 int main()
 {
 #ifdef DEBUG
 	StackTest();
 #endif
-    AudState = XXX_StateMachineCreate();
-    HandleEvent(AudState,EVENT_1);
+    AudStateHnd = XXX_StateMachineCreate();
+    HandleEvent(AudStateHnd,EVENT_1);
 	printf("Hello World!\n");
 	return 0;
 }
