@@ -114,7 +114,7 @@ typedef enum
     def _format_actuator(self, actuator):
         act = actuator["actuator"]
         return "TYPE_ACTUATOR {0[0]} = {{{0[2]}, {0[3]}, (TYPE_STATE *){1}U}};{new_line}".format(
-            act, self.states_list.index(act[4]), new_line=NEW_LINE)
+            act, self.states_list.index(act[4])+1, new_line=NEW_LINE)
 
     def _write_actuators(self, fd):
         for actuator in self.actuators:
@@ -130,7 +130,7 @@ typedef enum
     def _writes_state_child(self, fd, state):
         fd.write("TYPE_STATE *{name}_State_Childs[] = {{".format(**state))
         for child in state["childs"]:
-            fd.write("(TYPE_STATE *){}U, ".format(self.states_list.index(child)))
+            fd.write("(TYPE_STATE *){}U, ".format(self.states_list.index(child)+1))
         fd.write(STRUCT_END)
 
     def _writes_state_actuator(self, fd, state):
@@ -145,7 +145,7 @@ typedef enum
             self._writes_state_actuator(fd, state)
             fd.write(
                 "TYPE_STATE {0}_State = {{ \\{new_line}(TYPE_STATE *){1}U, \\{new_line}{0}_EntryFunc, \\{new_line}{0}_ExitFunc, \\{new_line}(TYPE_STATE **){0}_State_Childs, \\{new_line}(TYPE_ACTUATOR **){0}_State_Actuators, \\{new_line}}};{new_line}{new_line}".format(
-                    state["name"], self.states_list.index(state["parent"]), new_line=NEW_LINE))
+                    state["name"], self.states_list.index(state["parent"])+1, new_line=NEW_LINE))
 
         fd.write("TYPE_STATE *AllStates[] = {")
         for state in self.states_list:
@@ -167,19 +167,19 @@ TYPE_STATE_MGR *XXX_StateMachineCreate(void)
 
     while(*pAllActors != NULL)
     {
-        TargetStateID = (T32U)((*pAllActors)->TargetState);
+        TargetStateID = (T32U)((*pAllActors)->TargetState)-1U;
         ((*pAllActors)->TargetState) = AllStates[TargetStateID];
         pAllActors++;
     }
 
     while(*pAllStates != NULL)
     {
-        TargetStateID = (T32U)((*pAllStates)->pParent);
+        TargetStateID = (T32U)((*pAllStates)->pParent)-1U;
         (*pAllStates)->pParent = AllStates[TargetStateID];
         pChilds = (*pAllStates)->pChilds;
         while(*pChilds != NULL)
         {
-            TargetStateID = (T32U)(*pChilds);
+            TargetStateID = (T32U)(*pChilds)-1U;
             (*pChilds) = AllStates[TargetStateID];
             pChilds++;
         }
