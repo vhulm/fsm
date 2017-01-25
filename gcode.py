@@ -113,7 +113,7 @@ typedef enum
 
     def _format_actuator(self, actuator):
         act = actuator["actuator"]
-        return "TYPE_ACTUATOR {0[0]} = {{{0[2]}, {0[3]}, (TYPE_STATE *){1}}};{new_line}".format(
+        return "TYPE_ACTUATOR {0[0]} = {{{0[2]}, {0[3]}, (TYPE_STATE *){1}U}};{new_line}".format(
             act, self.states_list.index(act[4]), new_line=NEW_LINE)
 
     def _write_actuators(self, fd):
@@ -130,7 +130,7 @@ typedef enum
     def _writes_state_child(self, fd, state):
         fd.write("TYPE_STATE *{name}_State_Childs[] = {{".format(**state))
         for child in state["childs"]:
-            fd.write("(TYPE_STATE *){}, ".format(self.states_list.index(child)))
+            fd.write("(TYPE_STATE *){}U, ".format(self.states_list.index(child)))
         fd.write(STRUCT_END)
 
     def _writes_state_actuator(self, fd, state):
@@ -144,7 +144,7 @@ typedef enum
             self._writes_state_child(fd, state)
             self._writes_state_actuator(fd, state)
             fd.write(
-                "TYPE_STATE {0}_State = {{ \\{new_line}(TYPE_STATE *){1}, \\{new_line}{0}_EntryFunc, \\{new_line}{0}_ExitFunc, \\{new_line}(TYPE_STATE *){0}_State_Childs, \\{new_line}(TYPE_ACTUATOR *){0}_State_Actuators, \\{new_line}}};{new_line}{new_line}".format(
+                "TYPE_STATE {0}_State = {{ \\{new_line}(TYPE_STATE *){1}U, \\{new_line}{0}_EntryFunc, \\{new_line}{0}_ExitFunc, \\{new_line}(TYPE_STATE *){0}_State_Childs, \\{new_line}(TYPE_ACTUATOR *){0}_State_Actuators, \\{new_line}}};{new_line}{new_line}".format(
                     state["name"], self.states_list.index(state["parent"]), new_line=NEW_LINE))
 
         fd.write("TYPE_STATE *AllStates[] = {")
@@ -160,21 +160,21 @@ TYPE_STATE_MGR StateMgr = {&root_State,&STA_2D_State,&Stack};
 
 TYPE_STATE_MGR *XXX_StateMachineCreate(void)
 {
-    TYPE_ACTUATOR *pAllActors = (TYPE_ACTUATOR *)AllActors;
-    TYPE_STATE *pAllStates = (TYPE_STATE *)AllStates;
+    TYPE_ACTUATOR **pAllActors = (TYPE_ACTUATOR **)AllActors;
+    TYPE_STATE **pAllStates = (TYPE_STATE **)AllStates;
     T32U TargetStateID = 0;
 
-    while(pAllActors != NULL)
+    while(*pAllActors != NULL)
     {
-        TargetStateID = (T32U)(pAllActors->TargetState);
-        pAllActors->TargetState = AllStates[TargetStateID];
+        TargetStateID = (T32U)((*pAllActors)->TargetState);
+        ((*pAllActors)->TargetState) = AllStates[TargetStateID];
         pAllActors++;
     }
 
-    while(pAllStates != NULL)
+    while(*pAllStates != NULL)
     {
-        TargetStateID = (T32U)(pAllStates->pParent);
-        pAllStates->pParent = AllStates[TargetStateID];
+        TargetStateID = (T32U)((*pAllStates)->pParent);
+        (*pAllStates)->pParent = AllStates[TargetStateID];
         pAllStates++;
     }
 
