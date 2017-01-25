@@ -35,7 +35,7 @@ class ConfParser(object):
 
     @staticmethod
     def _get_states_func_define(state):
-        return "static void {entryfunc}(void){new_line}{{{new_line}{new_line}}}{new_line}{new_line}static void {exitfunc}(void){new_line}{{{new_line}{new_line}}}{new_line}{new_line}".format(
+        return "static void {entryfunc}(void){new_line}{{{new_line}\tprintf(\"{entryfunc}\\n\");{new_line}}}{new_line}{new_line}static void {exitfunc}(void){new_line}{{{new_line}\tprintf(\"{exitfunc}\\n\");{new_line}}}{new_line}{new_line}".format(
             new_line=NEW_LINE,
             **state)
 
@@ -45,7 +45,7 @@ class ConfParser(object):
 
     @staticmethod
     def _get_actuators_func_define(actuator):
-        return "static void {0[3]}(void){new_line}{{{new_line}{new_line}}}{new_line}{new_line}".format(
+        return "static void {0[3]}(void){new_line}{{{new_line}\tprintf(\"{0[3]}\\n\");{new_line}}}{new_line}{new_line}".format(
             actuator["actuator"],
             new_line=NEW_LINE)
 
@@ -144,7 +144,7 @@ typedef enum
             self._writes_state_child(fd, state)
             self._writes_state_actuator(fd, state)
             fd.write(
-                "TYPE_STATE {0}_State = {{ \\{new_line}(TYPE_STATE *){1}U, \\{new_line}{0}_EntryFunc, \\{new_line}{0}_ExitFunc, \\{new_line}(TYPE_STATE *){0}_State_Childs, \\{new_line}(TYPE_ACTUATOR *){0}_State_Actuators, \\{new_line}}};{new_line}{new_line}".format(
+                "TYPE_STATE {0}_State = {{ \\{new_line}(TYPE_STATE *){1}U, \\{new_line}{0}_EntryFunc, \\{new_line}{0}_ExitFunc, \\{new_line}(TYPE_STATE **){0}_State_Childs, \\{new_line}(TYPE_ACTUATOR **){0}_State_Actuators, \\{new_line}}};{new_line}{new_line}".format(
                     state["name"], self.states_list.index(state["parent"]), new_line=NEW_LINE))
 
         fd.write("TYPE_STATE *AllStates[] = {")
@@ -162,6 +162,7 @@ TYPE_STATE_MGR *XXX_StateMachineCreate(void)
 {
     TYPE_ACTUATOR **pAllActors = (TYPE_ACTUATOR **)AllActors;
     TYPE_STATE **pAllStates = (TYPE_STATE **)AllStates;
+    TYPE_STATE **pChilds = NULL;
     T32U TargetStateID = 0;
 
     while(*pAllActors != NULL)
@@ -175,6 +176,13 @@ TYPE_STATE_MGR *XXX_StateMachineCreate(void)
     {
         TargetStateID = (T32U)((*pAllStates)->pParent);
         (*pAllStates)->pParent = AllStates[TargetStateID];
+        pChilds = (*pAllStates)->pChilds;
+        while(*pChilds != NULL)
+        {
+            TargetStateID = (T32U)(*pChilds);
+            (*pChilds) = AllStates[TargetStateID];
+            pChilds++;
+        }
         pAllStates++;
     }
 

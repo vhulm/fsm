@@ -17,17 +17,18 @@ void HandleEvent(TYPE_STATE_MGR *this,TYPE_EVENT Event)
 TYPE_ACTUATOR *SearchActuator(TYPE_STATE_MGR *this,TYPE_EVENT Event)
 {
 	TYPE_STATE *pCurSerchState = this->pCurState;
-	TYPE_ACTUATOR *pCurActuator = pCurSerchState->pActuators;
+	TYPE_ACTUATOR **pCurActuator = pCurSerchState->pActuators;
 	
 	while(pCurSerchState != this->pRoot)
 	{
-		while(pCurActuator != NULL)
+		while(*pCurActuator != NULL)
 		{
-			if(pCurActuator->RecvEvent == Event)
+			if((*pCurActuator)->RecvEvent == Event)
 			{
-				(pCurActuator->CallFunc)();
-				return pCurActuator;
+				((*pCurActuator)->CallFunc)();
+				return *pCurActuator;
 			}
+			pCurActuator++;
 		}
 		pCurSerchState = pCurSerchState->pParent;
 	}
@@ -83,11 +84,11 @@ TYPE_STATE *SearchUP(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
 
 TYPE_STATE *SearchDown(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
 {
-	TYPE_STATE *pCurSerchState = this->pRoot->pChilds;
+	TYPE_STATE **pCurSerchState = this->pRoot->pChilds;
 
-	while(pCurSerchState != NULL)
+	while(*pCurSerchState != NULL)
 	{
-		if(RecursionSearch(this,pCurSerchState,TargetState) == TargetState)
+		if(RecursionSearch(this,*pCurSerchState,TargetState) == TargetState)
 		{
 			return TargetState;
 		}
@@ -99,14 +100,14 @@ TYPE_STATE *SearchDown(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
 
 TYPE_STATE *SearchSiblingNodes(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState)
 {
-	TYPE_STATE *pState = State->pChilds;
+	TYPE_STATE **pState = State->pChilds;
 	
-	while (pState != NULL)
+	while (*pState != NULL)
 	{
-		if(pState == TargetState)
+		if(*pState == TargetState)
 		{
-			StateRouteRecord(this,STATE_ENTRY,pState);
-			return pState;
+			StateRouteRecord(this,STATE_ENTRY,*pState);
+			return *pState;
 		}
 		pState++;
 	}
@@ -115,11 +116,11 @@ TYPE_STATE *SearchSiblingNodes(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE
 
 TYPE_STATE *RecursionSearch(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState)
 {
-	TYPE_STATE *pChild = State->pChilds;
+	TYPE_STATE **pChild = State->pChilds;
 	
 	StateRouteRecord(this,STATE_ENTRY,State);
 	
-	if(State->pChilds == NULL)
+	if(*(State->pChilds) == NULL)
 	{
 		StateRouteRecord(this,STATE_EXIT,State);
 		return NULL;
@@ -130,9 +131,9 @@ TYPE_STATE *RecursionSearch(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *T
 		return TargetState;
 	}else
 	{
-		while(pChild != NULL)
+		while(*pChild != NULL)
 		{
-			if(RecursionSearch(this,pChild,TargetState) == TargetState)
+			if(RecursionSearch(this,*pChild,TargetState) == TargetState)
 			{
 				return TargetState;
 			}

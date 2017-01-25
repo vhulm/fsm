@@ -53,8 +53,8 @@ struct tSTATE
 	TYPE_STATE *pParent;
 	FP_STATE_EX_FUNC EntryFunc;
 	FP_STATE_EX_FUNC ExitFunc;
-	TYPE_STATE *pChilds;
-	TYPE_ACTUATOR *pActuators;
+	TYPE_STATE **pChilds;
+	TYPE_ACTUATOR **pActuators;
 };
 
 #define MAX_ROUTE_STACK_DEEP 300
