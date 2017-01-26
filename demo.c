@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include "fsm.h"
-#include "fsm_conf.h"
+#include "Audfsm_conf.h"
 
 TYPE_STATE_MGR *AudSmHnd;
 
 int main()
 {
-    AudSmHnd = XXX_StateMachineCreate();
+    AudSmHnd = Aud_StateMachineCreate();
     HandleEvent(AudSmHnd,EVENT_1);
 	
 	return 0;

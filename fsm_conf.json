@@ -1,46 +1,5 @@
 {
   "name": "Aud",
-  "actuators": [
-    {
-      "actuator": ["STA_1A", "EVENT_1", "STA_1A"]
-    },
-    {
-      "actuator": ["STA_1B", "EVENT_1", "STA_2D"]
-    },
-    {
-      "actuator": ["STA_1C", "EVENT_1", "STA_2D"]
-    },
-    {
-      "actuator": ["STA_2A", "EVENT_1", "STA_2D"]
-    },
-    {
-      "actuator": ["STA_2B", "EVENT_1", "STA_2D"]
-    },
-    {
-      "actuator": ["STA_2C", "EVENT_1", "STA_2D"]
-    },
-    {
-      "actuator": ["STA_2D", "EVENT_1", "STA_2B"]
-    },
-    {
-      "actuator": ["STA_2D", "EVENT_2", "STA_2E"]
-    },
-    {
-      "actuator": ["STA_2E", "EVENT_1", "STA_2D"]
-    },
-    {
-      "actuator": ["STA_2F", "EVENT_1", "STA_2D"]
-    },
-    {
-      "actuator": ["STA_3A", "EVENT_1", "STA_2A"]
-    },
-    {
-      "actuator": ["STA_3B", "EVENT_1", "STA_2B"]
-    },
-    {
-      "actuator": ["STA_3C", "EVENT_1", "STA_2F"]
-    }
-  ],
   "states": [
     {
       "name": "STA_1A",
@@ -89,6 +48,47 @@
     {
       "name": "STA_3C",
       "parent": "STA_2D"
+    }
+  ],
+  "actuators": [
+    {
+      "actuator": ["STA_1A", "EVENT_1", "STA_1A"]
+    },
+    {
+      "actuator": ["STA_1B", "EVENT_1", "STA_2D"]
+    },
+    {
+      "actuator": ["STA_1C", "EVENT_1", "STA_2D"]
+    },
+    {
+      "actuator": ["STA_2A", "EVENT_1", "STA_2D"]
+    },
+    {
+      "actuator": ["STA_2B", "EVENT_1", "STA_2D"]
+    },
+    {
+      "actuator": ["STA_2C", "EVENT_1", "STA_2D"]
+    },
+    {
+      "actuator": ["STA_2D", "EVENT_1", "STA_2B"]
+    },
+    {
+      "actuator": ["STA_2D", "EVENT_2", "STA_2E"]
+    },
+    {
+      "actuator": ["STA_2E", "EVENT_1", "STA_2D"]
+    },
+    {
+      "actuator": ["STA_2F", "EVENT_1", "STA_2D"]
+    },
+    {
+      "actuator": ["STA_3A", "EVENT_1", "STA_2A"]
+    },
+    {
+      "actuator": ["STA_3B", "EVENT_1", "STA_2B"]
+    },
+    {
+      "actuator": ["STA_3C", "EVENT_1", "STA_2F"]
     }
   ]
 }

@@ -1,12 +1,15 @@
-a.out:demo.o fsm.o fsm_conf.o
-	gcc demo.o fsm.o fsm_conf.o
-demo.o:demo.c fsm.h fsm_conf.h
-	gcc -c demo.c -o demo.o
-fsm.o:fsm.c fsm.h fsm_conf.h
-	gcc -c fsm.c -o fsm.o
-fsm_conf.o:fsm_conf.c fsm_conf.h fsm.h
-	gcc -c fsm_conf.c -o fsm_conf.o
+demo: demo.o fsm.o Audfsm_conf.o
+	gcc -o $@ $^
+
+demo.o: demo.c
+	gcc -o $@ -c $<
+
+fsm.o: fsm.c
+	gcc -o $@ -c $<
+
+Audfsm_conf.o: Audfsm_conf.c
+	gcc -o $@ -c $<
 
 clean:
-	rm ./*.o
-	rm ./a.out
+	rm *.o
+	rm demo

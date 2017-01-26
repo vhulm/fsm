@@ -3,10 +3,7 @@
 
 #include <stdio.h>
 
-#define NO_ERROR 0
-#define ERROR_1 -1
-
-//#define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
 	#define pprintf printf

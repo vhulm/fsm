@@ -6,8 +6,8 @@ import json
 CONF_FILE = "./fsm_conf.json"
 
 OBJ_FILE_DIR = "./"
-CONF_HEADER_FILE = "fsm_conf.h"
-CONF_SOURCE_FILE = "fsm_conf.c"
+CONF_HEADER_FILE = "Audfsm_conf.h"
+CONF_SOURCE_FILE = "Audfsm_conf.c"
 
 STRUCT_END = "NULL};" + str(os.linesep)
 NEW_LINE = str(os.linesep)
@@ -35,7 +35,7 @@ class ConfParser(object):
 
     @staticmethod
     def _get_states_func_define(state):
-        return "static void {entryfunc}(void){new_line}{{{new_line}\tprintf(\"{entryfunc}\\n\");{new_line}}}{new_line}{new_line}static void {exitfunc}(void){new_line}{{{new_line}\tprintf(\"{exitfunc}\\n\");{new_line}}}{new_line}{new_line}".format(
+        return "static void {entryfunc}(void){new_line}{{{new_line}\tpprintf(\"{entryfunc}\\n\");{new_line}}}{new_line}{new_line}static void {exitfunc}(void){new_line}{{{new_line}\tpprintf(\"{exitfunc}\\n\");{new_line}}}{new_line}{new_line}".format(
             new_line=NEW_LINE,
             **state)
 
@@ -45,7 +45,7 @@ class ConfParser(object):
 
     @staticmethod
     def _get_actuators_func_define(actuator):
-        return "static void {0[3]}(void){new_line}{{{new_line}\tprintf(\"{0[3]}\\n\");{new_line}}}{new_line}{new_line}".format(
+        return "static void {0[3]}(void){new_line}{{{new_line}\tpprintf(\"{0[3]}\\n\");{new_line}}}{new_line}{new_line}".format(
             actuator["actuator"],
             new_line=NEW_LINE)
 
@@ -89,8 +89,8 @@ class ConfParser(object):
 
     def _write_header_file(self):
         f = open(CONF_HEADER_FILE, "w")
-        f.write("""#ifndef FSM_CONF_H
-#define FSM_CONF_H
+        f.write("""#ifndef AUDFSM_CONF_H
+#define AUDFSM_CONF_H
 
 #include "fsm.h"
 
@@ -104,7 +104,7 @@ typedef enum
     XXX_EVENT_MAX,
 }XXX_EVENT;
 """)
-        f.write("{new_line}TYPE_STATE_MGR *XXX_StateMachineCreate(void);{new_line}{new_line}".format(new_line=NEW_LINE))
+        f.write("{new_line}TYPE_STATE_MGR *Aud_StateMachineCreate(void);{new_line}{new_line}".format(new_line=NEW_LINE))
 
         f.write("""#endif
 
@@ -158,7 +158,7 @@ typedef enum
 
 TYPE_STATE_MGR StateMgr = {&root_State,&STA_2D_State,&Stack};
 
-TYPE_STATE_MGR *XXX_StateMachineCreate(void)
+TYPE_STATE_MGR *Aud_StateMachineCreate(void)
 {
     TYPE_ACTUATOR **pAllActors = (TYPE_ACTUATOR **)AllActors;
     TYPE_STATE **pAllStates = (TYPE_STATE **)AllStates;
@@ -202,7 +202,7 @@ TYPE_STATE_MGR *XXX_StateMachineCreate(void)
     def _write_source_file(self):
         f = open(CONF_SOURCE_FILE, "w")
         f.write(r'''#include <stdio.h>
-#include "fsm_conf.h"
+#include "Audfsm_conf.h"
 
 ''')
         self._write_func_declare(f)
