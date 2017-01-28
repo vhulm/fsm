@@ -21,7 +21,7 @@ typedef enum
     {% endfor %}{{ name.upper() }}_EVENT_MAX,
 }{{ name.upper() }}_EVENT;
 
-TYPE_STATE_MGR *{{ name.upper() }}_StateMachineCreate(void);
+TYPE_STATE_MGR *{{ name }}_StateMachineCreate(void);
 
 #endif
 '''
