@@ -5,12 +5,17 @@
 void HandleEvent(TYPE_STATE_MGR *this,TYPE_EVENT Event)
 {
 	TYPE_ACTUATOR *pActuator = NULL;
-	
+	TYPE_STATE *pTargetState = NULL;
+
 	pActuator = SearchActuator(this,Event);
 	if (pActuator != NULL)
 	{
-		SearchTargetState(this,pActuator->TargetState);
-		StateRoutePlay(this);
+		pTargetState = SearchTargetState(this,pActuator->TargetState);
+		if(pTargetState !=NULL)
+		{
+			StateRoutePlay(this);
+			this->pCurState = pTargetState;
+		}
 	}
 }
 

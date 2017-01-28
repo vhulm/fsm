@@ -8,7 +8,7 @@ int main()
 {
     AudSmHnd = Aud_StateMachineCreate();
     HandleEvent(AudSmHnd,EVENT_1);
-	
+    HandleEvent(AudSmHnd,EVENT_1);
 	return 0;
 }
 
