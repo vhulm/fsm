@@ -1,6 +1,24 @@
 #include <stdio.h>
 #include "fsm.h"
 
+static TYPE_ACTUATOR *SearchActuator(TYPE_STATE_MGR *this,TYPE_EVENT Event);
+static TYPE_STATE *SearchTargetState(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
+static void StateRoutePlay(TYPE_STATE_MGR *this);
+
+static TYPE_STATE *SearchUP(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
+static TYPE_STATE *SearchDown(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
+
+static TYPE_STATE *SearchSiblingNodes(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState);
+
+static TYPE_STATE *RecursionSearch(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState);
+
+static void StateRouteRecord(TYPE_STATE_MGR *this,TYPE_STATE_OPT StateOpt,TYPE_STATE *State);
+
+static FP_STATE_EX_FUNC StackPOP(TYPE_STACK *this);
+static FP_STATE_EX_FUNC StackPUSH(TYPE_STACK *this,FP_STATE_EX_FUNC CallFunc);
+static FP_STATE_EX_FUNC StackView(TYPE_STACK *this);
+
+static void NULL_FUNC(void);
 
 void HandleEvent(TYPE_STATE_MGR *this,TYPE_EVENT Event)
 {
@@ -19,7 +37,7 @@ void HandleEvent(TYPE_STATE_MGR *this,TYPE_EVENT Event)
 	}
 }
 
-TYPE_ACTUATOR *SearchActuator(TYPE_STATE_MGR *this,TYPE_EVENT Event)
+static TYPE_ACTUATOR *SearchActuator(TYPE_STATE_MGR *this,TYPE_EVENT Event)
 {
 	TYPE_STATE *pCurSerchState = this->pCurState;
 	TYPE_ACTUATOR **pCurActuator = pCurSerchState->pActuators;
@@ -40,7 +58,7 @@ TYPE_ACTUATOR *SearchActuator(TYPE_STATE_MGR *this,TYPE_EVENT Event)
 	return NULL;
 }
 
-TYPE_STATE *SearchTargetState(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
+static TYPE_STATE *SearchTargetState(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
 {
 	if(SearchUP(this,TargetState) == TargetState)
 	{
@@ -51,7 +69,7 @@ TYPE_STATE *SearchTargetState(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
 	}	
 }
 
-void StateRoutePlay(TYPE_STATE_MGR *this)
+static void StateRoutePlay(TYPE_STATE_MGR *this)
 {
 	TYPE_STACK *pStack = this->pStack;
 	FP_STATE_EX_FUNC CallFunc = NULL;
@@ -65,7 +83,7 @@ void StateRoutePlay(TYPE_STATE_MGR *this)
 	pStack->SP = 0;
 }
 
-TYPE_STATE *SearchUP(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
+static TYPE_STATE *SearchUP(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
 {
 	TYPE_STATE *pCurSerchState = this->pCurState;
 
@@ -87,7 +105,7 @@ TYPE_STATE *SearchUP(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
 	return NULL;
 }
 
-TYPE_STATE *SearchDown(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
+static TYPE_STATE *SearchDown(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
 {
 	TYPE_STATE **pCurSerchState = this->pRoot->pChilds;
 
@@ -103,7 +121,7 @@ TYPE_STATE *SearchDown(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
 	return NULL;
 }
 
-TYPE_STATE *SearchSiblingNodes(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState)
+static TYPE_STATE *SearchSiblingNodes(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState)
 {
 	TYPE_STATE **pState = State->pChilds;
 	
@@ -119,7 +137,7 @@ TYPE_STATE *SearchSiblingNodes(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE
 	return NULL;
 }
 
-TYPE_STATE *RecursionSearch(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState)
+static TYPE_STATE *RecursionSearch(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState)
 {
 	TYPE_STATE **pChild = State->pChilds;
 	
@@ -150,7 +168,7 @@ TYPE_STATE *RecursionSearch(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *T
 	}
 }
 
-void StateRouteRecord(TYPE_STATE_MGR *this,TYPE_STATE_OPT StateOpt,TYPE_STATE *State)
+static void StateRouteRecord(TYPE_STATE_MGR *this,TYPE_STATE_OPT StateOpt,TYPE_STATE *State)
 {
 	if(StackView(this->pStack) == &NULL_FUNC)
 	{
@@ -182,7 +200,7 @@ void StateRouteRecord(TYPE_STATE_MGR *this,TYPE_STATE_OPT StateOpt,TYPE_STATE *S
 	}
 }
 
-FP_STATE_EX_FUNC StackPOP(TYPE_STACK *this)
+static FP_STATE_EX_FUNC StackPOP(TYPE_STACK *this)
 {
 	T16U SP = this->SP;
 	
@@ -195,7 +213,7 @@ FP_STATE_EX_FUNC StackPOP(TYPE_STACK *this)
 	}
 }
 
-FP_STATE_EX_FUNC StackPUSH(TYPE_STACK *this,FP_STATE_EX_FUNC CallFunc)
+static FP_STATE_EX_FUNC StackPUSH(TYPE_STACK *this,FP_STATE_EX_FUNC CallFunc)
 {
 	T16U SP = this->SP;
 
@@ -209,7 +227,7 @@ FP_STATE_EX_FUNC StackPUSH(TYPE_STACK *this,FP_STATE_EX_FUNC CallFunc)
 	}
 }
 
-FP_STATE_EX_FUNC StackView(TYPE_STACK *this)
+static FP_STATE_EX_FUNC StackView(TYPE_STACK *this)
 {
 	T16U SP = this->SP;
 	
@@ -222,7 +240,7 @@ FP_STATE_EX_FUNC StackView(TYPE_STACK *this)
 	}
 }
 
-void NULL_FUNC(void)
+static void NULL_FUNC(void)
 {
 	
 }
