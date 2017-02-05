@@ -40,10 +40,11 @@ void HandleEvent(TYPE_STATE_MGR *this,TYPE_EVENT Event)
 static TYPE_ACTUATOR *SearchActuator(TYPE_STATE_MGR *this,TYPE_EVENT Event)
 {
 	TYPE_STATE *pCurSerchState = this->pCurState;
-	TYPE_ACTUATOR **pCurActuator = pCurSerchState->pActuators;
+	TYPE_ACTUATOR **pCurActuator = NULL;
 	
 	while(pCurSerchState != this->pRoot)
 	{
+		pCurActuator = pCurSerchState->pActuators;
 		while(*pCurActuator != NULL)
 		{
 			if((*pCurActuator)->RecvEvent == Event)
