@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 # -*-coding:utf-8-*-
+import os
+import shutil
 import json
 from jinja2 import Template
 
 CONF_FILE = "./fsm_conf.json"
 
+CORE_FILE_PATH = "src"
+
 OBJ_FILE_NAME_TEMP = "{}fsm_conf.{}"
+DEMO_FILE_NAME = "demo"
+MAKEFILE_FILE_NAME = "Makefile"
 
 HEADER_FILE_TEMP = '''#ifndef {{ name.upper() }}_FSM_CONF_H
 #define {{ name.upper() }}_FSM_CONF_H
@@ -132,6 +138,41 @@ static void {{ actor[1] }}_{{ actor[2] }}Action(void)
 {% endfor %}
 
 '''
+DEMO_FILE_TEMP = '''#include <stdio.h>
+#include "fsm.h"
+#include "{{ name }}fsm_conf.h"
+
+TYPE_STATE_MGR *{{ name }}SmHnd;
+
+int main()
+{
+    {{ name }}SmHnd = {{ name }}_StateMachineCreate();
+    /*
+	HandleEvent({{ name }}SmHnd,USER_EVENT);
+	HandleEvent({{ name }}SmHnd,USER_EVENT);
+	*/
+
+	return 0;
+}
+
+'''
+MAKEFILE_FILE_TEMP = '''{{ demo }}: {{ demo }}.o fsm.o {{ name }}fsm_conf.o
+	gcc -o $@ $^
+
+{{ demo }}.o: {{ demo }}.c
+	gcc -o $@ -c $<
+
+fsm.o: fsm.c
+	gcc -o $@ -c $<
+
+{{ name }}fsm_conf.o: {{ name }}fsm_conf.c
+	gcc -o $@ -c $<
+
+clean:
+	rm *.o
+	rm {{ demo }}
+
+'''
 
 
 def print_iterable(items):
@@ -151,8 +192,26 @@ class ConfParser(object):
         self.events = set()
         self.states_index = dict()
 
+        self.app_path = self.name
+        app_path = self.app_path
+
+        if not os.path.exists(app_path):
+            os.mkdir(app_path)
+            print("Create < {} > succeed!!!".format(app_path))
+        else:
+            print("Directory < {} > Exists!!!".format(app_path))
+
+        self.header_file_path = os.path.join(app_path, OBJ_FILE_NAME_TEMP.format(self.name, "h"))
+        self.source_file_path = os.path.join(app_path, OBJ_FILE_NAME_TEMP.format(self.name, "c"))
+        self.demo_file_path = os.path.join(app_path, DEMO_FILE_NAME + ".c")
+        self.makefile_file_path = os.path.join(app_path, MAKEFILE_FILE_NAME)
+
+        del app_path
+
         self.header_file_temp = Template(HEADER_FILE_TEMP)
         self.source_file_temp = Template(SOURCE_FILE_TEMP)
+        self.demo_file_temp = Template(DEMO_FILE_TEMP)
+        self.makefile_file_temp = Template(MAKEFILE_FILE_TEMP)
 
     def _update_states(self):
         self.states.insert(0, dict(name="root", parent="root"))  # Insert the "root" node to the head
@@ -195,17 +254,32 @@ class ConfParser(object):
         print_iterable(self.states_index.items())
 
     def _write_header_file(self):
-        with open(OBJ_FILE_NAME_TEMP.format(self.name, "h"), "w") as f:
+        with open(self.header_file_path, "w") as f:
             f.write(self.header_file_temp.render(name=self.name, events=self.events))
 
     def _write_source_file(self):
-        with open(OBJ_FILE_NAME_TEMP.format(self.name, "c"), "w") as f:
+        with open(self.source_file_path, "w") as f:
             f.write(self.source_file_temp.render(name=self.name, states=self.states, actuators=self.actuators,
                                                  states_index=self.states_index))
+
+    def _write_demo_file(self):
+        with open(self.demo_file_path, "w") as f:
+            f.write(self.demo_file_temp.render(name=self.name))
+
+    def _write_makefile_file(self):
+        with open(self.makefile_file_path, "w") as f:
+            f.write(self.makefile_file_temp.render(name=self.name, demo=DEMO_FILE_NAME))
+
+    def _copy_core_file(self):
+        shutil.copy(os.path.join(CORE_FILE_PATH, "fsm.c"), self.app_path)
+        shutil.copy(os.path.join(CORE_FILE_PATH, "fsm.h"), self.app_path)
 
     def write_to_file(self):
         self._write_header_file()
         self._write_source_file()
+        self._write_demo_file()
+        self._write_makefile_file()
+        self._copy_core_file()
 
 
 def main():
