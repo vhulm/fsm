@@ -148,11 +148,12 @@ int main()
 {
     {{ name }}SmHnd = {{ name }}_StateMachineCreate();
     /*
-	HandleEvent({{ name }}SmHnd,USER_EVENT);
-	HandleEvent({{ name }}SmHnd,USER_EVENT);
-	*/
+    HandleEvent({{ name }}SmHnd,USER_EVENT);    //Replace "USER_EVENT"
+    HandleEvent({{ name }}SmHnd,USER_EVENT);    //Replace "USER_EVENT"
+    */
+    printf("You need to edit the demo file\\n");     //Please delete this line
 
-	return 0;
+    return 0;
 }
 
 '''
