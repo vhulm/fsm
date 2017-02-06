@@ -247,7 +247,8 @@ static void NULL_FUNC(void)
 }
 
 int printf_null(char *fmt, ...)
-{	
+{
+    (void)fmt;
 	return 0;
 }
 

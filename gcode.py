@@ -157,17 +157,19 @@ int main()
 }
 
 '''
-MAKEFILE_FILE_TEMP = '''{{ demo }}: {{ demo }}.o fsm.o {{ name }}fsm_conf.o
-	gcc -o $@ $^
+MAKEFILE_FILE_TEMP = '''CCFLAGS = -W -Wall
+
+{{ demo }}: {{ demo }}.o fsm.o {{ name }}fsm_conf.o
+	gcc -o $@ $^ $(CCFLAGS)
 
 {{ demo }}.o: {{ demo }}.c
-	gcc -o $@ -c $<
+	gcc -o $@ -c $< $(CCFLAGS)
 
 fsm.o: fsm.c
-	gcc -o $@ -c $<
+	gcc -o $@ -c $< $(CCFLAGS)
 
 {{ name }}fsm_conf.o: {{ name }}fsm_conf.c
-	gcc -o $@ -c $<
+	gcc -o $@ -c $< $(CCFLAGS)
 
 clean:
 	rm *.o
