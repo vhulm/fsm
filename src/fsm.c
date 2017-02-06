@@ -249,7 +249,7 @@ static void NULL_FUNC(void)
 int printf_null(char *fmt, ...)
 {
     (void)fmt;
-	return 0;
+    return 0;
 }
 
 T32S StackTest(void)
