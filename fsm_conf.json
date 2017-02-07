@@ -1,5 +1,6 @@
 {
   "name": "Aud",
+  "init_state":"STA_2D",
   "states": [
     {
       "name": "STA_1A",

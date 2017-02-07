@@ -79,7 +79,7 @@ TYPE_STATE *{{ name }}AllStates[] = {
 
 TYPE_STACK {{ name }}Stack = {{ '{{0}, 0};' }}
 
-TYPE_STATE_MGR {{ name }}StateMgr = {{ '{' }}&root_State,&STA_2D_State,&{{ name }}Stack{{ '}' }};
+TYPE_STATE_MGR {{ name }}StateMgr = {{ '{' }}&root_State, &root_State, &{{ init_state }}_State, &{{ name }}Stack{{ '}' }};
 
 TYPE_STATE_MGR *{{ name }}_StateMachineCreate(void)
 {{ '{' }}
@@ -114,6 +114,7 @@ TYPE_STATE_MGR *{{ name }}_StateMachineCreate(void)
         pAllStates++;
     {{ '}' }}
 
+    EntryInitState(&{{ name }}StateMgr);
     {{ name }}_SMActive = 1;
     return &{{ name }}StateMgr;
 {{ '}' }}
@@ -190,6 +191,7 @@ class ConfParser(object):
             self.conf = json.load(f)
 
         self.name = self.conf.get("name", "")
+        self.init_state = self.conf.get("init_state", "")
         self.states = self.conf.get("states", [])
         self.actuators = self.conf.get("actuators", [])
         self.events = set()
@@ -262,7 +264,8 @@ class ConfParser(object):
 
     def _write_source_file(self):
         with open(self.source_file_path, "w") as f:
-            f.write(self.source_file_temp.render(name=self.name, states=self.states, actuators=self.actuators,
+            f.write(self.source_file_temp.render(name=self.name, init_state=self.init_state, states=self.states,
+                                                 actuators=self.actuators,
                                                  states_index=self.states_index))
 
     def _write_demo_file(self):

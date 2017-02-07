@@ -8,7 +8,7 @@ static void StateRoutePlay(TYPE_STATE_MGR *this);
 static TYPE_STATE *SearchUP(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
 static TYPE_STATE *SearchDown(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
 
-static TYPE_STATE *SearchSiblingNodes(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState);
+static TYPE_STATE *SearchChildNodes(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState);
 
 static TYPE_STATE *RecursionSearch(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState);
 
@@ -35,6 +35,28 @@ void HandleEvent(TYPE_STATE_MGR *this,TYPE_EVENT Event)
 			this->pCurState = pTargetState;
 		}
 	}
+}
+
+void EntryInitState(TYPE_STATE_MGR *this)
+{
+	TYPE_STATE *pTargetState = this->pInitState;
+	
+	if(SearchChildNodes(this,this->pCurState,pTargetState) == pTargetState)
+	{
+		StateRoutePlay(this);
+		this->pCurState = pTargetState;
+		return ;
+	}else
+	{
+		if(SearchDown(this,pTargetState) == pTargetState)
+		{
+			StateRoutePlay(this);
+			this->pCurState = pTargetState;
+			return ;
+		}
+	}
+	
+	return ;
 }
 
 static TYPE_ACTUATOR *SearchActuator(TYPE_STATE_MGR *this,TYPE_EVENT Event)
@@ -93,7 +115,7 @@ static TYPE_STATE *SearchUP(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
 		if(pCurSerchState != TargetState)
 		{
 			StateRouteRecord(this,STATE_EXIT,pCurSerchState);
-			if(SearchSiblingNodes(this,pCurSerchState->pParent,TargetState) == TargetState)
+			if(SearchChildNodes(this,pCurSerchState->pParent,TargetState) == TargetState)
 			{
 				return TargetState;
 			}
@@ -122,7 +144,7 @@ static TYPE_STATE *SearchDown(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
 	return NULL;
 }
 
-static TYPE_STATE *SearchSiblingNodes(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState)
+static TYPE_STATE *SearchChildNodes(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_STATE *TargetState)
 {
 	TYPE_STATE **pState = State->pChilds;
 	
@@ -150,7 +172,7 @@ static TYPE_STATE *RecursionSearch(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_S
 		return NULL;
 	}
 	
-	if(SearchSiblingNodes(this,State,TargetState) == TargetState)
+	if(SearchChildNodes(this,State,TargetState) == TargetState)
 	{
 		return TargetState;
 	}else

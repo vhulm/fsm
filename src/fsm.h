@@ -63,10 +63,12 @@ typedef struct tSTATE_MGR
 {
 	TYPE_STATE *pRoot;
 	TYPE_STATE *pCurState;
+	TYPE_STATE *pInitState;
 	TYPE_STACK *pStack;
 }TYPE_STATE_MGR;
 
 void HandleEvent(TYPE_STATE_MGR *this,TYPE_EVENT Event);
+void EntryInitState(TYPE_STATE_MGR *this);
 
 T32S StackTest(void);
 
