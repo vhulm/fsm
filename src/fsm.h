@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #define DEBUG
+#define QUICK_SEARCH
 
 #ifdef DEBUG
 	#define pprintf printf

@@ -41,21 +41,13 @@ void EntryInitState(TYPE_STATE_MGR *this)
 {
 	TYPE_STATE *pTargetState = this->pInitState;
 	
-	if(SearchChildNodes(this,this->pCurState,pTargetState) == pTargetState)
+	pTargetState = SearchTargetState(this,pTargetState);
+	if(pTargetState !=NULL)
 	{
 		StateRoutePlay(this);
 		this->pCurState = pTargetState;
-		return ;
-	}else
-	{
-		if(SearchDown(this,pTargetState) == pTargetState)
-		{
-			StateRoutePlay(this);
-			this->pCurState = pTargetState;
-			return ;
-		}
 	}
-	
+
 	return ;
 }
 
@@ -115,10 +107,12 @@ static TYPE_STATE *SearchUP(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
 		if(pCurSerchState != TargetState)
 		{
 			StateRouteRecord(this,STATE_EXIT,pCurSerchState);
+			#ifdef QUICK_SEARCH
 			if(SearchChildNodes(this,pCurSerchState->pParent,TargetState) == TargetState)
 			{
 				return TargetState;
 			}
+			#endif
 		}else
 		{
 			return TargetState;
@@ -165,6 +159,11 @@ static TYPE_STATE *RecursionSearch(TYPE_STATE_MGR *this,TYPE_STATE *State,TYPE_S
 	TYPE_STATE **pChild = State->pChilds;
 	
 	StateRouteRecord(this,STATE_ENTRY,State);
+
+	if(State == TargetState)
+	{
+		return TargetState;
+	}
 	
 	if(*(State->pChilds) == NULL)
 	{
