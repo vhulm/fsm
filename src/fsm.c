@@ -4,6 +4,7 @@
 static TYPE_ACTUATOR *SearchActuator(TYPE_STATE_MGR *this,TYPE_EVENT Event);
 static TYPE_STATE *SearchTargetState(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
 static void StateRoutePlay(TYPE_STATE_MGR *this);
+static void StateRouteDump(TYPE_STATE_MGR *this);
 
 static TYPE_STATE *SearchUP(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
 static TYPE_STATE *SearchDown(TYPE_STATE_MGR *this,TYPE_STATE *TargetState);
@@ -33,6 +34,9 @@ void HandleEvent(TYPE_STATE_MGR *this,TYPE_EVENT Event)
 		{
 			StateRoutePlay(this);
 			this->pCurState = pTargetState;
+		}else
+		{
+			StateRouteDump(this);
 		}
 	}
 }
@@ -46,6 +50,9 @@ void EntryInitState(TYPE_STATE_MGR *this)
 	{
 		StateRoutePlay(this);
 		this->pCurState = pTargetState;
+	}else
+	{
+		StateRouteDump(this);
 	}
 
 	return ;
@@ -96,6 +103,11 @@ static void StateRoutePlay(TYPE_STATE_MGR *this)
 		CallFunc();
 	}
 	pStack->SP = 0;
+}
+
+static void StateRouteDump(TYPE_STATE_MGR *this)
+{
+	this->pStack->SP = 0;
 }
 
 static TYPE_STATE *SearchUP(TYPE_STATE_MGR *this,TYPE_STATE *TargetState)
