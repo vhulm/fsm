@@ -36,16 +36,19 @@ SOURCE_FILE_TEMP = '''#include <stdio.h>
 #include "{{ name }}fsm_conf.h"
 
 {% for state in states %}
-static void {{ state["name"] }}_EntryFunc(void);
-static void {{ state["name"] }}_ExitFunc(void);
+static void {{ state["name"] }}_EntryHook(void);
+static void {{ state["name"] }}_ExitHook(void);
+extern void {{ state["name"] }}_EntryFunc(void);
+extern void {{ state["name"] }}_ExitFunc(void);
 {% endfor %}
 
 {% for actor in actuators -%}
-static void {{ actor[1] }}_{{ actor[2] }}Action(void);
+static void {{ actor[1] }}_{{ actor[2] }}ActionHook(void);
+extern void {{ actor[1] }}_{{ actor[2] }}ActionFunc(void);
 {% endfor %}
 
 {% for actor in actuators -%}
-TYPE_ACTUATOR {{ actor[0] }} = {{ '{' }}{{ actor[2] }}, {{ actor[1] }}_{{ actor[2] }}Action, (TYPE_STATE *){{ states_index[actor[3]] }}U{{ '}' }};
+TYPE_ACTUATOR {{ actor[0] }} = {{ '{' }}{{ actor[2] }}, {{ actor[1] }}_{{ actor[2] }}ActionHook, (TYPE_STATE *){{ states_index[actor[3]] }}U{{ '}' }};
 {% endfor %}
 
 TYPE_ACTUATOR *{{ name }}AllActors[] = { \\
@@ -65,8 +68,8 @@ TYPE_ACTUATOR *{{ state["name"] }}_State_Actuators[] = {
 NULL{{ '}' }};
 TYPE_STATE {{ state["name"] }}_State = {{ '{' }} \\
 (TYPE_STATE *){{ states_index[state["parent"]] }}U, \\
-{{ state["name"] }}_EntryFunc, \\
-{{ state["name"] }}_ExitFunc, \\
+{{ state["name"] }}_EntryHook, \\
+{{ state["name"] }}_ExitHook, \\
 (TYPE_STATE **){{ state["name"] }}_State_Childs, \\
 (TYPE_ACTUATOR **){{ state["name"] }}_State_Actuators, \\
 {{ '}' }};
@@ -120,21 +123,33 @@ TYPE_STATE_MGR *{{ name }}_StateMachineCreate(void)
 {{ '}' }}
 
 {% for state in states%}
-static void {{ state["name"] }}_EntryFunc(void)
+static void {{ state["name"] }}_EntryHook(void)
 {
-	pprintf("{{ state["name"] }}_EntryFunc\\n");
+#ifdef FSM_DEBUG
+    pprintf("{{ state["name"] }}_Entry\\n");
+#else
+    {{ state["name"] }}_EntryFunc();
+#endif
 }
 
-static void {{ state["name"] }}_ExitFunc(void)
+static void {{ state["name"] }}_ExitHook(void)
 {
-    pprintf("{{ state["name"] }}_ExitFunc\\n");
+#ifdef FSM_DEBUG
+    pprintf("{{ state["name"] }}_Exit\\n");
+#else
+    {{ state["name"] }}_ExitFunc();
+#endif
 }
 {% endfor %}
 
 {% for actor in actuators%}
-static void {{ actor[1] }}_{{ actor[2] }}Action(void)
+static void {{ actor[1] }}_{{ actor[2] }}ActionHook(void)
 {
+#ifdef FSM_DEBUG
     pprintf("{{ actor[1] }}_{{ actor[2] }}Action\\n");
+#else
+    {{ actor[1] }}_{{ actor[2] }}ActionFunc();
+#endif
 }
 {% endfor %}
 

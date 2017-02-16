@@ -3,10 +3,10 @@
 
 #include <stdio.h>
 
-#define DEBUG
+#define FSM_DEBUG
 #define QUICK_SEARCH
 
-#ifdef DEBUG
+#ifdef FSM_DEBUG
 	#define pprintf printf
 #else
 	#define pprintf printf_null
