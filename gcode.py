@@ -44,8 +44,12 @@ extern void {{ state["name"] }}_ExitFunc(void);
 extern void {{ actor[1] }}_{{ actor[2] }}Action(void);
 {% endfor %}
 
+{% for state in states -%}
+extern TYPE_STATE {{ state["name"] }}_State;
+{% endfor %}
+
 {% for actor in actuators -%}
-TYPE_ACTUATOR {{ actor[0] }} = {{ '{' }}{{ actor[2] }}, {{ actor[1] }}_{{ actor[2] }}Action, (TYPE_STATE *){{ states_index[actor[3]] }}U{{ '}' }};
+TYPE_ACTUATOR {{ actor[0] }} = {{ '{' }}{{ actor[2] }}, {{ actor[1] }}_{{ actor[2] }}Action, &{{ actor[3] }}_State{{ '}' }};
 {% endfor %}
 
 TYPE_ACTUATOR *{{ name }}AllActors[] = { \\
@@ -56,7 +60,7 @@ TYPE_ACTUATOR *{{ name }}AllActors[] = { \\
 {% for state in states %}
 TYPE_STATE *{{ state["name"] }}_State_Childs[] = {{ '{' }}
 {%- for child in state["childs"] -%}
-(TYPE_STATE *){{ states_index[child] }}U,
+&{{ child }}_State,
 {%- endfor %} NULL{{ '}' }};
 TYPE_ACTUATOR *{{ state["name"] }}_State_Actuators[] = {
 {%- for actor in state["actuators"] -%}
@@ -64,7 +68,7 @@ TYPE_ACTUATOR *{{ state["name"] }}_State_Actuators[] = {
 {%- endfor -%}
 NULL{{ '}' }};
 TYPE_STATE {{ state["name"] }}_State = {{ '{' }} \\
-(TYPE_STATE *){{ states_index[state["parent"]] }}U, \\
+&{{ state["parent"] }}_State, \\
 {{ state["name"] }}_EntryFunc, \\
 {{ state["name"] }}_ExitFunc, \\
 (TYPE_STATE **){{ state["name"] }}_State_Childs, \\
@@ -83,35 +87,11 @@ TYPE_STATE_MGR {{ name }}StateMgr = {{ '{' }}&root_State, &root_State, &{{ init_
 
 TYPE_STATE_MGR *{{ name }}_StateMachineCreate(void)
 {{ '{' }}
-    TYPE_ACTUATOR **pAllActors = (TYPE_ACTUATOR **){{ name }}AllActors;
-    TYPE_STATE **pAllStates = (TYPE_STATE **){{ name }}AllStates;
-    TYPE_STATE **pChilds = NULL;
-    T32U TargetStateID = 0;
     static T8U {{ name }}_SMActive = 0;
 
     if({{ name }}_SMActive == 1)
     {{ '{' }}
         return &{{ name }}StateMgr;
-    {{ '}' }}
-    while(*pAllActors != NULL)
-    {{ '{' }}
-        TargetStateID = (T32U)((*pAllActors)->TargetState)-1U;
-        ((*pAllActors)->TargetState) = {{ name }}AllStates[TargetStateID];
-        pAllActors++;
-    {{ '}' }}
-
-    while(*pAllStates != NULL)
-    {{ '{' }}
-        TargetStateID = (T32U)((*pAllStates)->pParent)-1U;
-        (*pAllStates)->pParent = {{ name }}AllStates[TargetStateID];
-        pChilds = (*pAllStates)->pChilds;
-        while(*pChilds != NULL)
-        {{ '{' }}
-            TargetStateID = (T32U)(*pChilds)-1U;
-            (*pChilds) = {{ name }}AllStates[TargetStateID];
-            pChilds++;
-        {{ '}' }}
-        pAllStates++;
     {{ '}' }}
 
     EntryInitState(&{{ name }}StateMgr);
